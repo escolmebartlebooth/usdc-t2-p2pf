@@ -45,7 +45,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   normal_distribution<double> dist_theta(theta, std_theta);
 
   // initialise particles
-  for (int i = 1; i < num_particles; ++i) {
+  for (int i = 0; i < num_particles; ++i) {
     // sample from distribution to initialise particles and set weight to 1
     Particle particle;
 
