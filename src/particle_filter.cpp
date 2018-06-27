@@ -57,6 +57,19 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 
     particles.push_back(particle);
   }
+
+  // write out some log for debug
+  cout << "initialised: " << particles.size << endl;
+  cout << "x " << x << endl;
+  cout << "y " << y << endl;
+  cout << "theta " << theta << endl;
+  cout << "first particle: " << particles[0].id << endl;
+  cout << "first particle: " << particles[0].x << endl;
+  cout << "first particle: " << particles[0].y << endl;
+  cout << "first particle: " << particles[0].theta << endl;
+  cout << "first particle: " << particles[0].weight << endl;
+  // set initialised as true...
+  is_initialized = true;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], double velocity, double yaw_rate) {
