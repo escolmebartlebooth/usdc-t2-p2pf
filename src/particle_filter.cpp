@@ -59,7 +59,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   }
 
   // write out some log for debug
-  cout << "initialised: " << particles.size << endl;
+  cout << "initialised: " << particles.size() << endl;
   cout << "x " << x << endl;
   cout << "y " << y << endl;
   cout << "theta " << theta << endl;
