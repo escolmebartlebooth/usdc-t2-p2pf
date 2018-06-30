@@ -175,9 +175,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     double gauss_norm = (1/(2 * M_PI * sig_x * sig_y));
     for (int j = 0; j < transformed_observations.size(); ++j) {
       int map_id = transformed_observations[j].id;
-      double exponent = ((transformed_observations[j].x - map_landmarks[map_id].x)**2)/(2 * sig_x**2) +
-                        ((transformed_observations[j].y - map_landmarks[map_id].y)**2)/(2 * sig_y**2);
-      double weight = gauss_norm * math.exp(-exponent);
+      double exponent = ((transformed_observations[j].x - map_landmarks.landmark_list[map_id].x_f)*(transformed_observations[j].x - map_landmarks.landmark_list[map_id].x_f))/(2 * sig_x**2) +
+                        ((transformed_observations[j].y - map_landmarks.landmark_list[map_id].y_f)*(transformed_observations[j].y - map_landmarks.landmark_list[map_id].y_f))/(2 * sig_y**2);
+      double weight = gauss_norm * exp(-exponent);
       probability_sum *= weight;
     }
     particles[i].weight = probability_sum;
