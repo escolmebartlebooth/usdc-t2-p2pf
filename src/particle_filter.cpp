@@ -118,23 +118,6 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to
 	//   implement this method and use it as a helper during the updateWeights phase.
 
-  // implement a nearest neighbour search for euclidean distance search...
-  double best_distance = 10000;
-  int matching_id = 0;
-  for (int j = 0; j < observations.size(); ++j) {
-    for (int k = 0; k < predicted.size(); ++k) {
-      if (k = 0){
-        best_distance = dist(predicted[k].x,predicted[k].y,observations[j].x,observations[j].y);
-        matching_id = predicted[k].id;
-      } else {
-        if (dist(predicted[k].x,predicted[k].y,observations[j].x,observations[j].y) < best_distance){
-          best_distance = dist(predicted[k].x,predicted[k].y,observations[j].x,observations[j].y);
-          matching_id = predicted[k].id;
-        }
-      }
-    }
-    observations[j].id = predicted[matching_id].id;
-  }
 
 }
 
@@ -168,8 +151,22 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // now associate each observation with a landmark using euclidean distances
     // this gets us the mu_x and mu_y for each observation
     // convert map to Obs struct
-    std::vector<LandmarkObs> predicted_observations = map_landmarks.landmark_list;
-    dataAssociation(, transformed_observations);
+    double best_distance = 10000;
+    int matching_id = 0;
+    for (int z = 0; z < transformed_observations.size(); ++z) {
+      for (int y = 0; y < map_landmarks.landmark_list.size(); ++y) {
+        if (y == 0){
+          best_distance = dist(map_landmarks.landmark_list[y].x_f,map_landmarks.landmark_list[y].y_f,transformed_observations[z].x,transformed_observations[z].y);
+          matching_id = map_landmarks.landmark_list[y].id_i;
+        } else {
+          if (dist(map_landmarks.landmark_list[y].x_f,map_landmarks.landmark_list[y].y_f,transformed_observations[z].x,transformed_observations[z].y) < best_distance){
+            best_distance = dist(map_landmarks.landmark_list[y].x_f,map_landmarks.landmark_list[y].y_f,transformed_observations[z].x,transformed_observations[z].y);
+            matching_id = map_landmarks.landmark_list[y].id_i;
+          }
+        }
+      }
+      observations[z].id = map_landmarks.landmark_list[matching_id].id_i;
+    }
     // calculate the updated weight in 2 steps
     double probability_sum = 1;
     double sig_x, sig_y;
