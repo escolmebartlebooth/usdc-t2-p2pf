@@ -165,7 +165,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
           }
         }
       }
-      observations[z].id = map_landmarks.landmark_list[matching_id].id_i;
+      transformed_observations[z].id = map_landmarks.landmark_list[matching_id].id_i;
     }
     // calculate the updated weight in 2 steps
     double probability_sum = 1;
@@ -175,8 +175,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     double gauss_norm = (1/(2 * M_PI * sig_x * sig_y));
     for (int j = 0; j < transformed_observations.size(); ++j) {
       int map_id = transformed_observations[j].id;
-      double exponent = ((transformed_observations[j].x - map_landmarks.landmark_list[map_id].x_f)*(transformed_observations[j].x - map_landmarks.landmark_list[map_id].x_f))/(2 * sig_x**2) +
-                        ((transformed_observations[j].y - map_landmarks.landmark_list[map_id].y_f)*(transformed_observations[j].y - map_landmarks.landmark_list[map_id].y_f))/(2 * sig_y**2);
+      double exponent = ((transformed_observations[j].x - map_landmarks.landmark_list[map_id].x_f)*(transformed_observations[j].x - map_landmarks.landmark_list[map_id].x_f))/(2 * sig_x*sig_x) +
+                        ((transformed_observations[j].y - map_landmarks.landmark_list[map_id].y_f)*(transformed_observations[j].y - map_landmarks.landmark_list[map_id].y_f))/(2 * sig_y*sig_y);
       double weight = gauss_norm * exp(-exponent);
       probability_sum *= weight;
     }
