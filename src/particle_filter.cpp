@@ -159,15 +159,17 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     std::vector<LandmarkObs> transformed_observations = observations;
     for (int j = 0; j < transformed_observations.size(); ++j) {
       transformed_observations[j].x = particles[i].x +
-                                      (cos(particles[i].theta * transformed_observations[j].x) -
-                                      (sin(particles[i].theta * transformed_observations[j].y);
+                                      (cos(particles[i].theta) * transformed_observations[j].x) -
+                                      (sin(particles[i].theta) * transformed_observations[j].y);
       transformed_observations[j].y = particles[i].y +
-                                      (sin(particles[i].theta * transformed_observations[j].x) +
-                                      (cos(particles[i].theta * transformed_observations[j].y);
+                                      (sin(particles[i].theta) * transformed_observations[j].x) +
+                                      (cos(particles[i].theta) * transformed_observations[j].y);
     }
     // now associate each observation with a landmark using euclidean distances
     // this gets us the mu_x and mu_y for each observation
-    this->dataAssociation(map_landmarks, transformed_observations);
+    // convert map to Obs struct
+    std::vector<LandmarkObs> predicted_observations = map_landmarks.landmark_list;
+    dataAssociation(, transformed_observations);
     // calculate the updated weight in 2 steps
     double probability_sum = 1;
     double sig_x, sig_y;
