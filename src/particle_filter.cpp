@@ -118,6 +118,24 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to
 	//   implement this method and use it as a helper during the updateWeights phase.
 
+  // implement a nearest neighbour search for euclidean distance search...
+  double best_distance = 10000;
+  int matching_id = 0;
+  for (int j = 0; j < observations.size(); ++i) {
+    for (int k = 0; k < predicted.size(); ++i) {
+      if (k = 0){
+        best_distance = dist(predicted[k].x,predicted[k].y,observations[j].x,observations[j].y);
+        matching_id = predicted[k].id;
+      } else {
+        if (dist() < best_distance){
+          best_distance = dist();
+          matching_id = predicted[k].id;
+        }
+      }
+    }
+    observations[j].id = predicted[matching_id].id;
+  }
+
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
@@ -132,6 +150,39 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   and the following is a good resource for the actual equation to implement (look at equation
 	//   3.33
 	//   http://planning.cs.uiuc.edu/node99.html
+
+  // for each particle...
+  for (int i = 0; i < num_particles; ++i) {
+    // transform to map coords using homogenous transformation
+    // x_map= x_part + (np.cos(theta) * x_obs) - (np.sin(theta) * y_obs)
+    // y_map= y_part + (np.sin(theta) * x_obs) + (np.cos(theta) * y_obs)
+    std::vector<LandmarkObs> transformed_observations = observations;
+    for (int j = 0; j < transformed_observations.size(); ++i) {
+      transformed_observations[j].x = particles[i].x +
+                                      (cos(particles[i].theta * transformed_observations[j].x) -
+                                      (sin(particles[i].theta * transformed_observations[j].y));
+      transformed_observations[j].y = particles[i].y +
+                                      (sin(particles[i].theta * transformed_observations[j].x) +
+                                      (cos(particles[i].theta * transformed_observations[j].y));
+    }
+    // now associate each observation with a landmark using euclidean distances
+    // this gets us the mu_x and mu_y for each observation
+    this.dataAssociation(map_landmarks, transformed_observations);
+    // calculate the updated weight in 2 steps
+    double probability_sum = 1;
+    double sig_x, sig_y;
+    sig_x = std_landmark[0];
+    sig_y = std_landmark[1];
+    double gauss_norm = (1/(2 * M_PI * sig_x * sig_y))
+    for (int j = 0; j < transformed_observations.size(); ++i) {
+      int map_id = transformed_observations[j].id;
+      double exponent = ((transformed_observations[j].x - map_landmarks[map_id].x)**2)/(2 * sig_x**2) +
+                        ((transformed_observations[j].y - map_landmarks[map_id].y)**2)/(2 * sig_y**2);
+      double weight = gauss_norm * math.exp(-exponent);
+      probability_sum *= weight;
+    }
+    particles[i].weight = weight;
+  }
 }
 
 void ParticleFilter::resample() {
