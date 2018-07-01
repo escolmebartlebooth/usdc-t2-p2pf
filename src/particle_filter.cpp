@@ -56,6 +56,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
     particle.weight = 1;
 
     particles.push_back(particle);
+    weights.push_back(1);
   }
 
   // write out some log for debug
@@ -181,6 +182,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       probability_sum *= weight;
     }
     particles[i].weight = probability_sum;
+    weights[i] = probability_sum;
   }
 }
 
@@ -189,6 +191,24 @@ void ParticleFilter::resample() {
 	// NOTE: You may find std::discrete_distribution helpful here.
 	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
 
+  // set up engine
+  default_random_engine gen;
+  std::discrete_distribution<int> distribution(0, num_particles);
+
+  // create temp variables
+  std::vector<Particle> t_particles;
+  int p_index = distribution(gen);
+  double beta = 0.0;
+  double max_weight = max_element(weights,weights+weights.size());
+  for (int j = 0; j < particles.size(); ++j) {
+    beta += (rand()/RAND_MAX) * 2 * max_weight;
+    while (beta > particles[p_index].weight) {
+      beta -= particles[index].weight;
+      p_index = (p_index + 1) % particles.size();
+    }
+    t_particles.push_back(particles[p_index]);
+  particles = t_particles;
+  }
 }
 
 Particle ParticleFilter::SetAssociations(Particle& particle, const std::vector<int>& associations,
