@@ -208,7 +208,7 @@ void ParticleFilter::resample() {
   for (int j = 0; j < particles.size(); ++j) {
     beta += (rand()/RAND_MAX) * 2 * max_weight;
     while (beta > particles[p_index].weight) {
-      beta -= particles[index].weight;
+      beta -= particles[p_index].weight;
       p_index = (p_index + 1) % particles.size();
     }
     t_particles.push_back(particles[p_index]);
