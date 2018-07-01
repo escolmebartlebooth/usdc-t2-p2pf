@@ -199,7 +199,12 @@ void ParticleFilter::resample() {
   std::vector<Particle> t_particles;
   int p_index = distribution(gen);
   double beta = 0.0;
-  double max_weight = max_element(weights,weights+weights.size());
+  double max_weight = 0.0;
+  for (int j = 0; j < particles.size(); ++j) {
+    if (weights[j] > max_weight) {
+      max_weight = weights[j];
+    }
+  }
   for (int j = 0; j < particles.size(); ++j) {
     beta += (rand()/RAND_MAX) * 2 * max_weight;
     while (beta > particles[p_index].weight) {
