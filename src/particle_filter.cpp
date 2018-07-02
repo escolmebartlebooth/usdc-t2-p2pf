@@ -35,8 +35,8 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   double std_x, std_y, std_theta;
 
   // DEBUG params
-  double u_x = 0
-  double u_y = 0
+  double u_x = 0;
+  double u_y = 0;
   double u_theta = 0;
 
   std_x = std[0];
