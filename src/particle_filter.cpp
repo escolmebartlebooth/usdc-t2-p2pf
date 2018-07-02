@@ -29,7 +29,9 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   num_particles = 1000;
 
   // create a random generator for sampling
-  default_random_engine gen;
+  default_random_engine gen_x;
+  default_random_engine gen_y;
+  default_random_engine gen_theta;
 
   // Standard deviations for x, y, and theta
   double std_x, std_y, std_theta;
@@ -55,9 +57,9 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
     Particle particle;
 
     particle.id = i;
-    particle.x = dist_x(gen);
-    particle.y = dist_y(gen);
-    particle.theta = dist_theta(gen);
+    particle.x = dist_x(gen_x);
+    particle.y = dist_y(gen_y);
+    particle.theta = dist_theta(gen_theta);
     particle.weight = 1;
 
     particles.push_back(particle);
