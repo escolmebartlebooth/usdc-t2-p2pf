@@ -64,11 +64,11 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   cout << "x " << x << endl;
   cout << "y " << y << endl;
   cout << "theta " << theta << endl;
-  cout << "first particle: " << particles[0].id << endl;
-  cout << "first particle: " << particles[0].x << endl;
-  cout << "first particle: " << particles[0].y << endl;
-  cout << "first particle: " << particles[0].theta << endl;
-  cout << "first particle: " << particles[0].weight << endl;
+  cout << "first particle: " << particles[50].id << endl;
+  cout << "first particle: " << particles[50].x << endl;
+  cout << "first particle: " << particles[50].y << endl;
+  cout << "first particle: " << particles[50].theta << endl;
+  cout << "first particle: " << particles[50].weight << endl;
   // set initialised as true...
   is_initialized = true;
 }
