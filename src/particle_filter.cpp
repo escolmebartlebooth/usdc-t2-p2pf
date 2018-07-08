@@ -101,7 +101,9 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	//  http://www.cplusplus.com/reference/random/default_random_engine/
 
   // create engines / noise gen for x, y, theta
-  default_random_engine gen;
+  default_random_engine gen_x;
+  default_random_engine gen_y;
+  default_random_engine gen_theta;
 
   // Standard deviations for x, y, and theta
   double std_x, std_y, std_theta;
@@ -110,6 +112,9 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
   std_y = std_pos[1];
   std_theta = std_pos[2];
 
+  cout << "predict: " << std_x << " " << std_y << " " << std_theta << endl;
+  cout << "predict: " << velocity << " " << delta_t << " " << yaw_rate << endl;
+
   // create noise distribution for each sensor input's std-dev
   normal_distribution<double> dist_x(0, std_x);
   normal_distribution<double> dist_y(0, std_y);
@@ -117,20 +122,36 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 
   // loop through each particle and predict new x, y, theta + noise and update
   for (int i = 0; i < num_particles; ++i) {
-    // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
-    particles[i].x = particles[i].x +
-                     (velocity/yaw_rate)*
-                     (sin(particles[i].theta + yaw_rate*delta_t) - sin(particles[i].theta))
-                     + dist_x(gen);
+    if (fabs(yaw_rate) < 0.001){
+      // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
+      particles[i].x = particles[i].x +
+                       (velocity*delta_t)*cos(particles[i].theta))
+                       + dist_x(gen_x);
 
-    // y = y-1 + v/yaw * [-cos(theta-1 + yaw * dt) + cos(theta-1)] + noise
-    particles[i].y = particles[i].y +
-                     (velocity/yaw_rate)*
-                     (-cos(particles[i].theta + yaw_rate*delta_t) + cos(particles[i].theta))
-                     + dist_y(gen);
+      // y = y-1 + v/yaw * [-cos(theta-1 + yaw * dt) + cos(theta-1)] + noise
+      particles[i].y = particles[i].y +
+                       (velocity*delta_t)*sin(particles[i].theta))
+                       + dist_y(gen_y);
 
-    // theta = theta-1 + yaw * dt + noise
-    particles[i].theta = particles[i].theta + yaw_rate*delta_t + dist_theta(gen);
+      // theta = theta as no yaw rate
+      particles[i].theta = particles[i].theta;
+    } else {
+      // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
+      particles[i].x = particles[i].x +
+                       (velocity/yaw_rate)*
+                       (sin(particles[i].theta + yaw_rate*delta_t) - sin(particles[i].theta))
+                       + dist_x(gen_x);
+
+      // y = y-1 + v/yaw * [-cos(theta-1 + yaw * dt) + cos(theta-1)] + noise
+      particles[i].y = particles[i].y +
+                       (velocity/yaw_rate)*
+                       (-cos(particles[i].theta + yaw_rate*delta_t) + cos(particles[i].theta))
+                       + dist_y(gen_y);
+
+      // theta = theta-1 + yaw * dt + noise
+      particles[i].theta = particles[i].theta + yaw_rate*delta_t + dist_theta(gen_theta);
+    }
+
   }
 }
 
