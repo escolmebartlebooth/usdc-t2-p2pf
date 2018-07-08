@@ -184,8 +184,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // transform to map coords using homogenous transformation
     // x_map= x_part + (np.cos(theta) * x_obs) - (np.sin(theta) * y_obs)
     // y_map= y_part + (np.sin(theta) * x_obs) + (np.cos(theta) * y_obs)
+    cout << "observations: " << observations.size() << endl;
     for (int j = 0; i<observations.size(); ++j) {
-      cout << "observation: " << j << endl;
       LandmarkObs obs_map;
       obs_map.x = particles[i].x +
                   (cos(particles[i].theta) * observations[j].x) -
@@ -197,8 +197,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       // Associate observation with nearest landmark
       double min_distance = 100000;
       int index_ass = -1;
+      cout << "lamdmarks: " << map_landmarks.landmark_list.size() << endl;
       for (int k = 0; k < map_landmarks.landmark_list.size(); ++k) {
-        cout << "lamdmark: " << k << endl;
         double distance = dist(obs_map.x, obs_map.y,
                                map_landmarks.landmark_list[k].x_f,
                                map_landmarks.landmark_list[k].y_f);
@@ -208,7 +208,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         }
       }
       // Update the Particle weights wrt observations
-      cout << "gn: " << endl;
       double gn = 1.0 / (2.0 * M_PI * std_landmark[0] * std_landmark[1]);
 
       // calculate exponent taking the nearest landmark as the mean
@@ -217,7 +216,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       double exponent = pow(obs_map.x-mu_x, 2)/(2*pow(std_landmark[0],2)) +
                         pow(obs_map.y-mu_y, 2)/(2*pow(std_landmark[1],2));
 
-      cout << "wp: " << endl;
       weight_prob *= gn * exp(-exponent);
     }
     cout << "pf update: " << endl;
