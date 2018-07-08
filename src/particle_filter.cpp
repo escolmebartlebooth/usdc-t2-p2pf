@@ -29,9 +29,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   num_particles = 100;
 
   // create a random generator for sampling
-  default_random_engine gen_x;
-  default_random_engine gen_y;
-  default_random_engine gen_theta;
+  default_random_engine gen;
 
   // Standard deviations for x, y, and theta
   double std_x, std_y, std_theta;
@@ -45,7 +43,6 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   std_y = std[1];
   std_theta = std[2];
 
-
   // This line creates a normal (Gaussian) distribution for x, y and theta
   normal_distribution<double> dist_x(x, std_x);
   normal_distribution<double> dist_y(y, std_y);
@@ -57,13 +54,13 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
     Particle particle;
 
     particle.id = i;
-    particle.x = dist_x(gen_x);
-    particle.y = dist_y(gen_y);
-    particle.theta = dist_theta(gen_theta);
+    particle.x = dist_x(gen);
+    particle.y = dist_y(gen);
+    particle.theta = dist_theta(gen);
     particle.weight = 1;
 
     particles.push_back(particle);
-    weights.push_back(1);
+    weights.push_back(particle.weight);
 
     // debug
     u_x += particle.x;
@@ -101,9 +98,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	//  http://www.cplusplus.com/reference/random/default_random_engine/
 
   // create engines / noise gen for x, y, theta
-  default_random_engine gen_x;
-  default_random_engine gen_y;
-  default_random_engine gen_theta;
+  default_random_engine gen;
 
   // Standard deviations for x, y, and theta
   double std_x, std_y, std_theta;
@@ -112,8 +107,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
   std_y = std_pos[1];
   std_theta = std_pos[2];
 
-  cout << "predict: " << velocity << " " << delta_t << " " << yaw_rate << endl;
-
   // create noise distribution for each sensor input's std-dev
   normal_distribution<double> dist_x(0, std_x);
   normal_distribution<double> dist_y(0, std_y);
@@ -121,34 +114,34 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 
   // loop through each particle and predict new x, y, theta + noise and update
   for (int i = 0; i < num_particles; ++i) {
-    if (fabs(yaw_rate) < 0.001){
+    if (fabs(yaw_rate) < 0.00001){
       // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
       particles[i].x = particles[i].x +
                        (velocity*delta_t)*cos(particles[i].theta) +
-                       dist_x(gen_x);
+                       dist_x(gen);
 
       // y = y-1 + v/yaw * [-cos(theta-1 + yaw * dt) + cos(theta-1)] + noise
       particles[i].y = particles[i].y +
                        (velocity*delta_t)*sin(particles[i].theta) +
-                       dist_y(gen_y) ;
+                       dist_y(gen) ;
 
       // theta = theta as no yaw rate
-      particles[i].theta = particles[i].theta + dist_theta(gen_theta) ;
+      particles[i].theta = particles[i].theta + dist_theta(gen) ;
     } else {
       // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
       particles[i].x = particles[i].x +
                        (velocity/yaw_rate)*
                        (sin(particles[i].theta + yaw_rate*delta_t) - sin(particles[i].theta))
-                       + dist_x(gen_x);
+                       + dist_x(gen);
 
       // y = y-1 + v/yaw * [-cos(theta-1 + yaw * dt) + cos(theta-1)] + noise
       particles[i].y = particles[i].y +
                        (velocity/yaw_rate)*
                        (-cos(particles[i].theta + yaw_rate*delta_t) + cos(particles[i].theta))
-                       + dist_y(gen_y);
+                       + dist_y(gen);
 
       // theta = theta-1 + yaw * dt + noise
-      particles[i].theta = particles[i].theta + yaw_rate*delta_t + dist_theta(gen_theta);
+      particles[i].theta = particles[i].theta + yaw_rate*delta_t + dist_theta(gen);
     }
   }
 }
