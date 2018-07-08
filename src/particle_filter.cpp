@@ -192,9 +192,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
                   (cos(particles[i].theta) * observations[j].y);
 
       // Associate observation with nearest landmark
-      min_distance = 100000;
-      index_ass = -1;
-      for (int k = 0; m < map_landmarks.landmark_list.size(); ++m) {
+      double min_distance = 100000;
+      int index_ass = -1;
+      for (int k = 0; m < map_landmarks.landmark_list.size(); ++k) {
         double distance = dist(obs_map.x, obs_map.y,
                                map_landmarks.landmark_list[k].x_f,
                                map_landmarks.landmark_list[k].y_f);
@@ -212,10 +212,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       double exponent = pow(obs_map.x-mu_x, 2)/(2*pow(std_landmark[0],2)) +
                         pow(obs_map.y-mu_y, 2)/(2*pow(std_landmark[1],2));
 
-      weight_update *= gn * exp(-exponent);
+      weight_prob *= gn * exp(-exponent);
     }
-    particles[i].weight = weight_update;
-    weight_sum += weight_update;
+    particles[i].weight = weight_prob;
+    weight_sum += weight_prob;
   }
   // normalize all weights
   for(int i=0; i<num_particles; ++i) {
