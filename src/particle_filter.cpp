@@ -185,7 +185,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // x_map= x_part + (np.cos(theta) * x_obs) - (np.sin(theta) * y_obs)
     // y_map= y_part + (np.sin(theta) * x_obs) + (np.cos(theta) * y_obs)
     cout << "observations: " << observations.size() << endl;
-    for (int j = 0; i<observations.size(); ++j) {
+    for (int j = 0; j<observations.size(); ++j) {
       LandmarkObs obs_map;
       obs_map.x = particles[i].x +
                   (cos(particles[i].theta) * observations[j].x) -
@@ -197,7 +197,6 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       // Associate observation with nearest landmark
       double min_distance = 100000;
       int index_ass = -1;
-      cout << "lamdmarks: " << map_landmarks.landmark_list.size() << endl;
       for (int k = 0; k < map_landmarks.landmark_list.size(); ++k) {
         double distance = dist(obs_map.x, obs_map.y,
                                map_landmarks.landmark_list[k].x_f,
