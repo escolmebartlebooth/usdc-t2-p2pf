@@ -287,6 +287,7 @@ void ParticleFilter::resample() {
 
   // generate random starting index for resampling wheel
   uniform_int_distribution<int> uniintdist(0, num_particles-1);
+  default_random_engine gen;
   auto index = uniintdist(gen);
 
   // get max weight
