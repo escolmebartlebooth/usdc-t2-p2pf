@@ -176,53 +176,50 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   http://planning.cs.uiuc.edu/node99.html
 
   // for each particle...
+  double weight_sum = 0.0;
   for (int i = 0; i < num_particles; ++i) {
+    double weight_prob = 1.0;
     // transform to map coords using homogenous transformation
     // x_map= x_part + (np.cos(theta) * x_obs) - (np.sin(theta) * y_obs)
     // y_map= y_part + (np.sin(theta) * x_obs) + (np.cos(theta) * y_obs)
-    std::vector<LandmarkObs> transformed_observations = observations;
-    for (int j = 0; j < transformed_observations.size(); ++j) {
-      transformed_observations[j].x = particles[i].x +
-                                      (cos(particles[i].theta) * transformed_observations[j].x) -
-                                      (sin(particles[i].theta) * transformed_observations[j].y);
-      transformed_observations[j].y = particles[i].y +
-                                      (sin(particles[i].theta) * transformed_observations[j].x) +
-                                      (cos(particles[i].theta) * transformed_observations[j].y);
-    }
-    // now associate each observation with a landmark using euclidean distances
-    // this gets us the mu_x and mu_y for each observation
-    // convert map to Obs struct
-    double best_distance = 10000;
-    int matching_id = 0;
-    for (int z = 0; z < transformed_observations.size(); ++z) {
-      for (int y = 0; y < map_landmarks.landmark_list.size(); ++y) {
-        if (y == 0){
-          best_distance = dist(map_landmarks.landmark_list[y].x_f,map_landmarks.landmark_list[y].y_f,transformed_observations[z].x,transformed_observations[z].y);
-          matching_id = map_landmarks.landmark_list[y].id_i;
-        } else {
-          if (dist(map_landmarks.landmark_list[y].x_f,map_landmarks.landmark_list[y].y_f,transformed_observations[z].x,transformed_observations[z].y) < best_distance){
-            best_distance = dist(map_landmarks.landmark_list[y].x_f,map_landmarks.landmark_list[y].y_f,transformed_observations[z].x,transformed_observations[z].y);
-            matching_id = map_landmarks.landmark_list[y].id_i;
-          }
+    for (int j = 0; i<observations.size(); ++j) {
+      LandmarkObs obs_map;
+      obs_map.x = particles[i].x +
+                  (cos(particles[i].theta) * observations[j].x) -
+                  (sin(particles[i].theta) * observations[j].y);
+      obs_map.y = particles[i].y +
+                  (sin(particles[i].theta) * observations[j].x) +
+                  (cos(particles[i].theta) * observations[j].y);
+
+      // Associate observation with nearest landmark
+      min_distance = 100000;
+      index_ass = -1;
+      for (int k = 0; m < map_landmarks.landmark_list.size(); ++m) {
+        double distance = dist(obs_map.x, obs_map.y,
+                               map_landmarks.landmark_list[k].x_f,
+                               map_landmarks.landmark_list[k].y_f);
+        if (distance < min_distance) {
+          min_distance = distance;
+          index_ass = k;
         }
       }
-      transformed_observations[z].id = map_landmarks.landmark_list[matching_id].id_i;
+      // Update the Particle weights wrt observations
+      double gn = 1.0 / (2.0 * M_PI * std_landmark[0] * std_landmark[1]);
+
+      // calculate exponent taking the nearest landmark as the mean
+      double mu_x = map_landmarks.landmark_list[index_ass].x_f;
+      double mu_y = map_landmarks.landmark_list[index_ass].y_f;
+      double exponent = pow(obs_map.x-mu_x, 2)/(2*pow(std_landmark[0],2)) +
+                        pow(obs_map.y-mu_y, 2)/(2*pow(std_landmark[1],2));
+
+      weight_update *= gn * exp(-exponent);
     }
-    // calculate the updated weight in 2 steps
-    double probability_sum = 1;
-    double sig_x, sig_y;
-    sig_x = std_landmark[0];
-    sig_y = std_landmark[1];
-    double gauss_norm = (1/(2 * M_PI * sig_x * sig_y));
-    for (int j = 0; j < transformed_observations.size(); ++j) {
-      int map_id = transformed_observations[j].id;
-      double exponent = ((transformed_observations[j].x - map_landmarks.landmark_list[map_id].x_f)*(transformed_observations[j].x - map_landmarks.landmark_list[map_id].x_f))/(2 * sig_x*sig_x) +
-                        ((transformed_observations[j].y - map_landmarks.landmark_list[map_id].y_f)*(transformed_observations[j].y - map_landmarks.landmark_list[map_id].y_f))/(2 * sig_y*sig_y);
-      double weight = gauss_norm * exp(-exponent);
-      probability_sum *= weight;
-    }
-    particles[i].weight = probability_sum;
-    weights[i] = probability_sum;
+    particles[i].weight = weight_update;
+    weight_sum += weight_update;
+  }
+  // normalize all weights
+  for(int i=0; i<num_particles; ++i) {
+      particles[i].weight /= weight_sum;
   }
 }
 
