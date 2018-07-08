@@ -180,11 +180,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
   cout << "start update: " << endl;
   for (int i = 0; i < num_particles; ++i) {
     double weight_prob = 1.0;
-    cout << "particle: " << i << endl;
     // transform to map coords using homogenous transformation
     // x_map= x_part + (np.cos(theta) * x_obs) - (np.sin(theta) * y_obs)
     // y_map= y_part + (np.sin(theta) * x_obs) + (np.cos(theta) * y_obs)
-    cout << "observations: " << observations.size() << endl;
     for (int j = 0; j<observations.size(); ++j) {
       LandmarkObs obs_map;
       obs_map.x = particles[i].x +
@@ -217,12 +215,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
       weight_prob *= gn * exp(-exponent);
     }
-    cout << "pf update: " << endl;
     particles[i].weight = weight_prob;
     weight_sum += weight_prob;
   }
   // normalize all weights
-  cout << "norm: " << endl;
   for(int i=0; i<num_particles; ++i) {
       particles[i].weight /= weight_sum;
   }
