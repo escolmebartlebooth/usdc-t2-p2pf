@@ -229,27 +229,21 @@ void ParticleFilter::resample() {
 	// NOTE: You may find std::discrete_distribution helpful here.
 	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
 
+  // creates weights vector list
+  vector<double> weights;
+  for (int i=0; i<num_particles; i++) {
+    weights.push_back(particles[i].weight);
+  }
   // set up engine
   default_random_engine gen;
-  std::discrete_distribution<int> distribution(0, num_particles);
+  std::discrete_distribution<double> dist(weights.begin(), weights.end());
 
   // create temp variables
   std::vector<Particle> t_particles;
-  int p_index = distribution(gen);
-  double beta = 0.0;
-  double max_weight = 0.0;
   for (int j = 0; j < particles.size(); ++j) {
-    if (weights[j] > max_weight) {
-      max_weight = weights[j];
-    }
+    int idx = dist(gen);
+    t_particles.push_back(particles[idx]);
   }
-  for (int j = 0; j < particles.size(); ++j) {
-    beta += (rand()/RAND_MAX) * 2 * max_weight;
-    while (beta > particles[p_index].weight) {
-      beta -= particles[p_index].weight;
-      p_index = (p_index + 1) % particles.size();
-    }
-    t_particles.push_back(particles[p_index]);
   particles = t_particles;
   }
 }
