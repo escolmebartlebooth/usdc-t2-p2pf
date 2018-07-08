@@ -112,7 +112,6 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
   std_y = std_pos[1];
   std_theta = std_pos[2];
 
-  cout << "predict: " << std_x << " " << std_y << " " << std_theta << endl;
   cout << "predict: " << velocity << " " << delta_t << " " << yaw_rate << endl;
 
   // create noise distribution for each sensor input's std-dev

@@ -56,11 +56,11 @@ int main()
 
       auto s = hasData(std::string(data));
       if (s != "") {
-      	
-      	
+
+
         auto j = json::parse(s);
         std::string event = j[0].get<std::string>();
-        
+
         if (event == "telemetry") {
           // j[1] is the data JSON object
 
@@ -121,12 +121,16 @@ int main()
 		  Particle best_particle;
 		  double weight_sum = 0.0;
 		  for (int i = 0; i < num_particles; ++i) {
-			if (particles[i].weight > highest_weight) {
-				highest_weight = particles[i].weight;
-				best_particle = particles[i];
-			}
-			weight_sum += particles[i].weight;
+			 if (particles[i].weight > highest_weight) {
+				  highest_weight = particles[i].weight;
+				  best_particle = particles[i];
+			 }
+			 weight_sum += particles[i].weight;
 		  }
+      cout << "best " << best_particle.x << endl;
+      cout << "best " << best_particle.y << endl;
+      cout << "best " << best_particle.theta << endl;
+      cout << "best " << best_particle.weight << endl;
 		  cout << "highest w " << highest_weight << endl;
 		  cout << "average w " << weight_sum/num_particles << endl;
 
@@ -143,7 +147,7 @@ int main()
           auto msg = "42[\"best_particle\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-	  
+
         }
       } else {
         std::string msg = "42[\"manual\",{}]";
