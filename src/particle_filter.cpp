@@ -96,13 +96,15 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 
   // pre-calculate some variables
   double vdt = velocity*delta_t;
-  double p_theta = particles[i].theta;
-  double x_noise = dist_x(gen);
-  double y_noise = dist_y(gen);
-  double theta_noise = dist_theta(gen);
 
   // loop through each particle and predict new x, y, theta + noise and update
   for (int i = 0; i < num_particles; ++i) {
+    // helpers
+    double p_theta = particles[i].theta;
+    double x_noise = dist_x(gen);
+    double y_noise = dist_y(gen);
+    double theta_noise = dist_theta(gen);
+
     if (fabs(yaw_rate) < 0.00001){
       // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
       particles[i].x += vdt * cos(p_theta) + x_noise;
