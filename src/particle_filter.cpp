@@ -254,28 +254,28 @@ void ParticleFilter::resample() {
 
   vector<Particle> new_particles;
 
-  // get all of the current weights
+  // get weights
   vector<double> weights;
-  for (int i = 0; i < num_particles; i++) {
+  for (int i = 0; i < num_particles; ++i) {
     weights.push_back(particles[i].weight);
   }
 
-  // generate random starting index for resampling wheel
-  uniform_int_distribution<int> uniintdist(0, num_particles-1);
+  // get a random starting index for the wheel
+  uniform_int_distribution<int> uid(0, num_particles-1);
   default_random_engine gen;
-  auto index = uniintdist(gen);
+  auto index = uid(gen);
 
   // get max weight
   double max_weight = *max_element(weights.begin(), weights.end());
 
   // uniform random distribution [0.0, max_weight)
-  uniform_real_distribution<double> unirealdist(0.0, max_weight);
+  uniform_real_distribution<double> urd(0.0, max_weight);
 
   double beta = 0.0;
 
-  // spin the resample wheel!
+  // go round the wheel
   for (int i = 0; i < num_particles; i++) {
-    beta += unirealdist(gen) * 2.0;
+    beta += urd(gen) * 2.0;
     while (beta > weights[index]) {
       beta -= weights[index];
       index = (index + 1) % num_particles;
