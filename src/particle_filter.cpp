@@ -34,11 +34,6 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   // Standard deviations for x, y, and theta
   double std_x, std_y, std_theta;
 
-  // DEBUG params
-  double u_x = 0;
-  double u_y = 0;
-  double u_theta = 0;
-
   std_x = std[0];
   std_y = std[1];
   std_theta = std[2];
@@ -61,16 +56,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 
     particles.push_back(particle);
     weights.push_back(particle.weight);
-
-    // debug
-    u_x += particle.x;
-    u_y += particle.y;
-    u_theta += particle.theta;
   }
-
-  u_x /= num_particles;
-  u_y /= num_particles;
-  u_theta /= num_particles;
 
   // write out some log for debug
   cout << "initialised: " << particles.size() << endl;
@@ -82,10 +68,6 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   cout << "first particle: " << particles[50].y << endl;
   cout << "first particle: " << particles[50].theta << endl;
   cout << "first particle: " << particles[50].weight << endl;
-  // additional DEBUG
-  cout << "mean x: " << u_x << endl;
-  cout << "mean y: " << u_y << endl;
-  cout << "mean theta: " << u_theta << endl;
 
   // set initialised as true...
   is_initialized = true;
