@@ -98,7 +98,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
   for (int i = 0; i < num_particles; ++i) {
     if (fabs(yaw_rate) < 0.0001){
       // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
-      particles[i].x += particles[i].x +
+      particles[i].x = particles[i].x +
                        (velocity*delta_t)*cos(particles[i].theta) +
                        dist_x(gen);
 
