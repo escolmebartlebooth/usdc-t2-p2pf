@@ -94,32 +94,36 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
   normal_distribution<double> dist_y(0, std_y);
   normal_distribution<double> dist_theta(0, std_theta);
 
-  // pre-calculate some variables
-  double vdt = velocity*delta_t;
-
   // loop through each particle and predict new x, y, theta + noise and update
   for (int i = 0; i < num_particles; ++i) {
-    // helpers
-    double p_theta = particles[i].theta;
-    double x_noise = dist_x(gen);
-    double y_noise = dist_y(gen);
-    double theta_noise = dist_theta(gen);
-
     if (fabs(yaw_rate) < 0.00001){
       // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
-      particles[i].x += vdt * cos(p_theta) + x_noise;
+      particles[i].x += particles[i].x +
+                       (velocity*delta_t)*cos(particles[i].theta) +
+                       dist_x(gen);
+
       // y = y-1 + v/yaw * [-cos(theta-1 + yaw * dt) + cos(theta-1)] + noise
-      particles[i].y += vdt * sin(p_theta) + y_noise;
+      particles[i].y = particles[i].y +
+                       (velocity*delta_t)*sin(particles[i].theta) +
+                       dist_y(gen) ;
+
       // theta = theta as no yaw rate
-      particles[i].theta = p_theta + theta_noise;
+      particles[i].theta = particles[i].theta + dist_theta(gen) ;
     } else {
-      double vyaw = velocity/yaw_rate;
       // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
-      particles[i].x += vyaw * (sin(p_theta + vdt) - sin(p_theta)) + x_noise;
+      particles[i].x = particles[i].x +
+                       (velocity/yaw_rate)*
+                       (sin(particles[i].theta + yaw_rate*delta_t) - sin(particles[i].theta))
+                       + dist_x(gen);
+
       // y = y-1 + v/yaw * [-cos(theta-1 + yaw * dt) + cos(theta-1)] + noise
-      particles[i].y += vyaw * (-cos(p_theta + vdt) + cos(p_theta)) + y_noise;
+      particles[i].y = particles[i].y +
+                       (velocity/yaw_rate)*
+                       (-cos(particles[i].theta + yaw_rate*delta_t) + cos(particles[i].theta))
+                       + dist_y(gen);
+
       // theta = theta-1 + yaw * dt + noise
-      particles[i].theta += yaw_rate*delta_t + theta_noise;
+      particles[i].theta = particles[i].theta + yaw_rate*delta_t + dist_theta(gen);
     }
   }
 }
