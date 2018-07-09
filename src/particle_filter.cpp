@@ -192,8 +192,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     for (unsigned int j = 0; j < map_landmarks.landmark_list.size(); ++j) {
 
       // get landmark values
-      float lmark_x = map_landmarks.landmark_list[j].x_f;
-      float lmark_y = map_landmarks.landmark_list[j].y_f;
+      double lmark_x = map_landmarks.landmark_list[j].x_f;
+      double lmark_y = map_landmarks.landmark_list[j].y_f;
       int lmark_id = map_landmarks.landmark_list[j].id_i;
 
       // use sensor range to weed out landmarks too far away to measure
@@ -239,7 +239,9 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       // calculate weight for this observation with multivariate Gaussian
       double sigma_x = std_landmark[0];
       double sigma_y = std_landmark[1];
-      double obs_w = ( 1/(2*M_PI*sigma_x*sigma_y)) * exp( -( pow(pred_x-obs_x,2)/(2*pow(sigma_x, 2)) + (pow(pred_y-obs_y,2)/(2*pow(sigma_y, 2))) ) );
+      double gn = ( 1/(2*M_PI*sigma_x*sigma_y));
+      double obs_w = gn * exp(-(pow(pred_x-obs_x,2)/(2*pow(sigma_x, 2)) +
+                                (pow(pred_y-obs_y,2)/(2*pow(sigma_y, 2)))));
 
       // product of this obersvation weight with total observations weight
       particles[i].weight *= obs_w;
@@ -268,13 +270,13 @@ void ParticleFilter::resample() {
   // get max weight
   double max_weight = *max_element(weights.begin(), weights.end());
 
-  // uniform random distribution [0.0, max_weight)
+  // create distribution to pick weights from
   uniform_real_distribution<double> urd(0.0, max_weight);
 
   double beta = 0.0;
 
   // go round the wheel
-  for (int i = 0; i < num_particles; i++) {
+  for (int i = 0; i < num_particles; ++i) {
     beta += urd(gen) * 2.0;
     while (beta > weights[index]) {
       beta -= weights[index];
