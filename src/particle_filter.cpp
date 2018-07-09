@@ -44,7 +44,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   normal_distribution<double> dist_theta(theta, std_theta);
 
   // initialise particles
-  for (unsigned int i = 0; i < num_particles; ++i) {
+  for (int i = 0; i < num_particles; ++i) {
     // sample from distribution to initialise particles and set weight to 1
     Particle particle;
 
@@ -95,7 +95,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
   normal_distribution<double> dist_theta(0, std_theta);
 
   // loop through each particle and predict new x, y, theta + noise and update
-  for (unsigned int i = 0; i < num_particles; ++i) {
+  for (int i = 0; i < num_particles; ++i) {
     if (fabs(yaw_rate) < 0.0001){
       // x = x-1 + v/yaw * [sin(theta-1 + yaw * dt) - sin(theta-1)] + noise
       particles[i].x += particles[i].x +
@@ -200,7 +200,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       if (fabs(lmark_x - p_x) <= sensor_range && fabs(lmark_y - p_y) <= sensor_range) {
 
         // add prediction to vector
-        predictions.push_back(LandmarkObs{ lmark_id, lmark_x, lm_y });
+        predictions.push_back(LandmarkObs{ lmark_id, lmark_x, lmark_y });
       }
     }
 
