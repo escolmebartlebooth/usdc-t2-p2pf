@@ -1,7 +1,7 @@
 # Kidnapped Vehicle, Particle Filter Project for Self-Driving Car Engineer Nanodegree Program
 
 Author: David Escolme
-Date: 09 July 2018
+Date: 12 July 2018
 
 ## Project Objectives
 
@@ -23,7 +23,7 @@ Once the install for uWebSocketIO is complete, the main program can be built and
 4. make
 5. ./particle_filter
 
-Alternatively some scripts have been included to streamline this process, these can be leveraged by executing the following in the top directory of the project:
+Alternatively some scripts have been included to streamline this process, these can be leveraged by executing the following in the top directory of the project - please review the commands in these for your own environment settings:
 
 1. ./clean.sh
 2. ./build.sh
@@ -112,9 +112,30 @@ root
 
 The particle filter class has 4 key elements:
 
-+ Init: Used to set the number of particles and set each particle's initial x, y and theta value to be the initial GPS data with added sensor noise using a gaussian distribution
++ Init: Used to set the number of particles (either a default value or a value entered as a command line parameter) and set each particle's initial x, y and theta value to be the initial GPS data with added sensor noise using a gaussian distribution
 + Predict: Takes sensed velocity and yaw_rate data together with noise parameters to update each particle's expected x, y, theta value using bicycle motion models with added gaussian noise
 + Update and Data Association: Takes environment observations and transforms the coordinates with respect to each particle in turn to Map coordinates, then matches the observations to each landmark. This enables rach particle's weight to be updated which is, in essence, a probability of the particle's plausability
 + Resample: Populate a new set of particles drawn from the existing set accounting for the probability (weight) of each particle
 
 Over time, this then leads to a 'zero-ing' in on the car's actual position with respect to its environment.
+
+# Discussion
+
+A default value of 100 particles allows the filter to operate within tolerance of accuracy and operation time. Using the command line parameter, some experiements were run to determine the minimum/maximum particle count for success. In this case we get:
+
+1000: failure (time): x: 0.107; y: 0.102; yaw: 0.004; system time: 152
+500: failure (time): x: 0.108; y: 0.099; yaw: 0.004; system time: 101.68
+*maximum somewhere between 475 and 500*
+475: success: x: 0.110; y: 0.103; yaw: 0.004; system time: 98.12
+50: success: x: 0.123; y: 0.116; yaw: 0.004; system time: 79.54
+10: success: x: 0.152; y: 0.119; yaw: 0.005; system time: 67.00
+*7: success: x: 0.161; y: 0.142; yaw: 0.006; system time: 68.54*
+6: failure (accuracy): x: 1.131; y: 0.359; yaw: 0.042; system time: 70.66
+
+Given that the GPS / sensor information is subject to noise and that the Map is of a certain size, I suppose that the minimum particle size is in some way correlated to both of these external parameters, whereby a minimum number of particles is needed to cover the variation in measurement.
+
+Conversely, with more particles comes more computation time to predict and update and associate each particle at each measurement cycle.
+
+This suggests that particle design must account for these factors to arrive at a filter that can predict location with adequate accuracy and speed for the task in hand.
+
+
