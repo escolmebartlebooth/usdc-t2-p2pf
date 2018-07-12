@@ -19,14 +19,14 @@
 
 using namespace std;
 
-void ParticleFilter::init(double x, double y, double theta, double std[]) {
+void ParticleFilter::init(double x, double y, double theta, double std[], int particle_count) {
 	// TODO: Set the number of particles. Initialize all particles to first position (based on estimates of
 	//   x, y, theta and their uncertainties from GPS) and all weights to 1.
 	// Add random Gaussian noise to each particle.
 	// NOTE: Consult particle_filter.h for more information about this method (and others in this file).
 
   // set the number of particles
-  num_particles = 100;
+  num_particles = particle_count;
 
   // create a random generator for sampling
   default_random_engine gen;

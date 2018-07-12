@@ -25,7 +25,7 @@ std::string hasData(std::string s) {
   return "";
 }
 
-int main()
+int main(int argc, char* argv[])
 {
   uWS::Hub h;
 
@@ -45,6 +45,15 @@ int main()
 
   // Create particle filter
   ParticleFilter pf;
+
+  //try to capture data input...
+  //param 1: num_particles
+  int particle_count = 100;
+  if (argc > 1){
+    int particle_count = atoi(argv[1]);
+  }
+
+  cout << particle_count << endl;
 
   h.onMessage([&pf,&map,&delta_t,&sensor_range,&sigma_pos,&sigma_landmark](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -72,7 +81,7 @@ int main()
 			      double sense_y = std::stod(j[1]["sense_y"].get<std::string>());
 			      double sense_theta = std::stod(j[1]["sense_theta"].get<std::string>());
 
-			      pf.init(sense_x, sense_y, sense_theta, sigma_pos);
+			      pf.init(sense_x, sense_y, sense_theta, sigma_pos, particle_count);
 		      } else {
 			     // Predict the vehicle's next state from previous (noiseless control) data.
 		  	   double previous_velocity = std::stod(j[1]["previous_velocity"].get<std::string>());
