@@ -123,14 +123,15 @@ Over time, this then leads to a 'zero-ing' in on the car's actual position with 
 
 A default value of 100 particles allows the filter to operate within tolerance of accuracy and operation time. Using the command line parameter, some experiements were run to determine the minimum/maximum particle count for success. In this case we get:
 
-1000: failure (time): x: 0.107; y: 0.102; yaw: 0.004; system time: 152
-500: failure (time): x: 0.108; y: 0.099; yaw: 0.004; system time: 101.68
-*maximum somewhere between 475 and 500*
-475: success: x: 0.110; y: 0.103; yaw: 0.004; system time: 98.12
-50: success: x: 0.123; y: 0.116; yaw: 0.004; system time: 79.54
-10: success: x: 0.152; y: 0.119; yaw: 0.005; system time: 67.00
-*7: success: x: 0.161; y: 0.142; yaw: 0.006; system time: 68.54*
-6: failure (accuracy): x: 1.131; y: 0.359; yaw: 0.042; system time: 70.66
+| particle size           | status             | x error | y error | yaw error | operation time |
+|-------------------------|--------------------|---------|---------|-----------|----------------|
+| 1000                    | failure (time)     | 0.107   | 0.102   | 0.004     | 152            |
+| 500                     | failure (time)     | 0.108   | 0.099   | 0.004     | 101.68         |
+| max between 475 and 500 |                    |         |         |           |                |
+| 475                     | success            | 0.110   | 0.103   | 0.004     | 98.12          |
+| 50                      | success            | 0.123   | 0.116   | 0.004     | 79.54          |
+| 7                       | success            | 0.161   | 0.142   | 0.006     | 68.54          |
+| 6                       | failure (accuracy) | 1.131   | 0.359   | 0.042     | 70.66          |
 
 Given that the GPS / sensor information is subject to noise and that the Map is of a certain size, I suppose that the minimum particle size is in some way correlated to both of these external parameters, whereby a minimum number of particles is needed to cover the variation in measurement.
 
