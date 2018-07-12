@@ -133,6 +133,15 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 	//   observed measurement to this particular landmark.
 	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to
 	//   implement this method and use it as a helper during the updateWeights phase.
+
+  /*
+  / Loop through each observation
+  /   Loop through each prediction (map landmark)
+  /     if the landmark / observation distance is lower than current min,
+  /     update min distance and associate this landmark / observation pair
+  /   At end of loop, write the associated landmark id to the observation
+  */
+
   for (unsigned int i = 0; i < observations.size(); ++i) {
 
     // observation
@@ -176,6 +185,20 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   and the following is a good resource for the actual equation to implement (look at equation
 	//   3.33
 	//   http://planning.cs.uiuc.edu/node99.html
+
+  /*
+  / Loop through each particle
+      Capture x, y, theta
+      Create vector to hold landmarks
+      Loop through landmarks
+        add to vector if in range of particle based on sensor range
+      Create observations vector to hold transformations to map coords
+  /   Loop through each observation
+  /     use equations to convert to map coords
+        add to observations vector
+      associate landmarks with transformed observations
+  /   Update particle weight using the maths...
+  */
 
   // for each particle...
   for (int i = 0; i < num_particles; ++i) {
@@ -254,9 +277,16 @@ void ParticleFilter::resample() {
 	// NOTE: You may find std::discrete_distribution helpful here.
 	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
 
+  /*
+  / create a temp vector for the weighted sampled particles
+  / pick a starting point at random
+  / get max weight and create a distribution to pick next weight from
+  / go round the resampling wheel to create a new set of particles
+  / assign to paricles vector
+  */
   vector<Particle> new_particles;
 
-  // get weights
+  // get weights - could use particle filter weights vector???
   vector<double> weights;
   for (int i = 0; i < num_particles; ++i) {
     weights.push_back(particles[i].weight);
