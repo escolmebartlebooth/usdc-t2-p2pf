@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
   //param 1: num_particles
   int particle_count = 100;
   if (argc > 1){
-    int particle_count = atoi(argv[1]);
+    particle_count = atoi(argv[1]);
   }
 
   cout << particle_count << endl;
