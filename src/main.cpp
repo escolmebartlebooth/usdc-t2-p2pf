@@ -51,6 +51,10 @@ int main(int argc, char* argv[])
   int particle_count = 100;
   if (argc > 1){
     particle_count = atoi(argv[1]);
+    if (particle_count <= 0) {
+      cout << "too small or bad value defaulting to 100" << endl;
+      particle_count = 100;
+    }
   }
 
   cout << particle_count << endl;
